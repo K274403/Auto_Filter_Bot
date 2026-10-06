@@ -303,17 +303,33 @@ async def _process_with_lock(bot, filename, caption, media_info, base_name, proc
     }
 
     if not movie_doc:
+        query = base_name
+
         if TMDB_POSTER:
-details = await get_movie_detailsx(query)
-if not details:
-    logger.warning("Movie details not found, skipping poster.")
-    return
-if details.get("error") or (not details.get("poster_url") and not details.get("backdrop_url")):
-                error_tmdb=True
-                logger.info("TMDB error switching to IMDB")
-                details = await get_movie_details(base_name) or {}
+            # Try TMDB first. get_movie_detailsx() always returns a dict now,
+            # including an error dict when the API/key is unavailable.
+            details = await get_movie_detailsx(query, file=filename) or {}
+
+            if (
+                details.get("error")
+                or (
+                    not details.get("poster_url")
+                    and not details.get("backdrop_url")
+                )
+            ):
+                error_tmdb = True
+                logger.info(
+                    "TMDB unavailable for '%s'; switching to IMDb fallback.",
+                    base_name,
+                )
+                details = await get_movie_details(base_name, file=filename) or {}
         else:
-            details = await get_movie_details(base_name) or {}
+            details = await get_movie_details(base_name, file=filename) or {}
+
+        # Never let metadata failure crash indexing. Store a minimal document
+        # so the file can still be announced and future files can be attached.
+        if not isinstance(details, dict):
+            details = {}
 
         raw_genres = details.get("genres", "N/A")
         if isinstance(raw_genres, str):
@@ -380,14 +396,30 @@ async def send_movie_update(bot, base_name):
             size=(2560, 1440) if LANDSCAPE_POSTER and TMDB_POSTER and movie_doc.get("is_backdrop") and not movie_doc.get("error_tmdb") else (853, 1280)
             if movie_doc.get("poster_url") and not LINK_PREVIEW:
                 resized_poster = await fetch_image(movie_doc["poster_url"], size)
-                msg = await bot.send_photo(
-                    chat_id=MOVIE_UPDATE_CHANNEL,
-                    photo=resized_poster,
-                    caption=text,
-                    reply_markup=buttons,
-                    parse_mode=enums.ParseMode.HTML
-                )
-                is_photo = True
+
+                try:
+                    photo = resized_poster or movie_doc["poster_url"]
+                    msg = await bot.send_photo(
+                        chat_id=MOVIE_UPDATE_CHANNEL,
+                        photo=photo,
+                        caption=text,
+                        reply_markup=buttons,
+                        parse_mode=enums.ParseMode.HTML
+                    )
+                    is_photo = True
+                except Exception as photo_error:
+                    logger.warning(
+                        "Poster send failed for '%s': %s. Sending text update instead.",
+                        base_name,
+                        photo_error,
+                    )
+                    msg = await bot.send_message(
+                        chat_id=MOVIE_UPDATE_CHANNEL,
+                        text=text,
+                        reply_markup=buttons,
+                        parse_mode=enums.ParseMode.HTML
+                    )
+                    is_photo = False
             else:
                 send_params = {
                     "chat_id": MOVIE_UPDATE_CHANNEL,
