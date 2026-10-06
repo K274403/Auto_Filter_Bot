@@ -89,7 +89,7 @@ MOVIE_UPDATE_CHANNEL = int(environ.get('MOVIE_UPDATE_CHANNEL', '-1001907919299')
 DREAMXBOTZ_IMAGE_FETCH = is_enabled(environ.get('DREAMXBOTZ_IMAGE_FETCH', 'True'), True)  # On (True) / Off (False)
 LINK_PREVIEW = is_enabled(environ.get('LINK_PREVIEW', 'False'), False) # Shows link preview in notification msg instead of image
 ABOVE_PREVIEW = is_enabled(environ.get('ABOVE_PREVIEW', 'True'), True) # Shows link preview above the text in notification msg if True else below the msg
-TMDB_API_KEY = environ.get('TMDB_API_KEY', '').strip()  # Set your TMDB API v3 key in the environment
+TMDB_API_KEY = environ.get('TMDB_API_KEY', '2d93e409c0445e1d4cb2e7a7fa4077cc').strip()  # Set your TMDB API v3 key in the environment
 TMDB_POSTER = is_enabled(environ.get('TMDB_POSTER', 'True'), True) # Shows TMDB poster in notification msg
 LANDSCAPE_POSTER = is_enabled(environ.get('LANDSCAPE_POSTER', 'True'), True) # Shows landscape poster in notification msg
 
