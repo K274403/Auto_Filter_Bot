@@ -43,7 +43,7 @@ FSUB_PICS = (environ.get('FSUB_PICS', 'https://graph.org/file/7478ff3eac37f4329c
 # Admin, Channels & Users Configuration
 # ============================
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1798348973').split()] # Replace with the actual admin ID(s) to add
-CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1002617794966 -1001767486774 -1002192042126').split()]  # Channel id for auto indexing (make sure bot is admin)
+CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '-1002148604082 -1002617794966 -1001767486774 -1002192042126').split()]  # Channel id for auto indexing (make sure bot is admin)
 
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002265223323'))  # Log channel id (make sure bot is admin)
 BIN_CHANNEL = int(environ.get('BIN_CHANNEL', '-1002265223323'))  # Bin channel id (make sure bot is admin)
@@ -60,8 +60,8 @@ auth_channels     = environ.get("AUTH_CHANNELS", "-1002023191399")# Channels for
 # ============================
 # Payment Configuration
 # ============================
-QR_CODE = environ.get('QR_CODE', 'https://i.ibb.co/ynvfZFpK/photo-2025-06-16-09-11-33-7516472361781035036.jpg')    # QR code image for payments
-OWNER_UPI_ID = environ.get('OWNER_UPI_ID', 'rkmoviezip@ybl')    # Owner UPI ID for payments
+QR_CODE = environ.get('QR_CODE', 'https://files.catbox.moe/k2wt93.jpg')    # QR code image for payments
+OWNER_UPI_ID = environ.get('OWNER_UPI_ID', 'zcinehub@ybl')    # Owner UPI ID for payments
 
 STAR_PREMIUM_PLANS = {
     10: "7day",
